@@ -1,0 +1,43 @@
+-- 1. Показать товары, средняя цена продажи которых была больше 50 гривен
+
+SELECT name, AVG(price) as average_sale_price
+FROM Products
+GROUP BY name
+HAVING AVG(price) > 50;
+
+--2. Вывести количество товаров каждой категории, средняя цена поставки которых больше 100 гривен
+
+SELECT p.category, COUNT(*) as product_count
+FROM Products p
+JOIN producer s ON p.producer = s.producer_name
+GROUP BY p.category
+HAVING AVG(p.quantity * s.delivery_price) > 100;
+
+--3. Показать информацию о наименьшей стоимости поставки товаров за последний месяц для каждого поставщика. Отсортировать стоимость по возрастанию
+
+SELECT s.producer_name, MIN(s.delivery_price) as min_delivery_price
+FROM Products p
+JOIN producer s ON p.producer = s.producer_name
+WHERE p.date_of_delivery >= DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()) - 1, 0)
+GROUP BY s.producer_name
+ORDER BY min_delivery_price;
+
+--4. Показать информацию о производителе, его полном адресе, и количестве товаров, которые он выпускает. Общая стоимость продаж товаров каждого производителя при этом должна быть от 500 до 20000 гривен
+
+SELECT p.producer, s.producer_address, COUNT(*) as product_count, SUM(p.price * p.quantity + s.delivery_price) as total_sales
+FROM Products p
+JOIN producer s ON p.producer = s.producer_name
+GROUP BY p.producer, s.producer_address
+HAVING SUM(p.price * p.quantity + s.delivery_price) BETWEEN 500 AND 20000;
+
+--5. Показать количество товаров каждой категории, при этом учитывая только те товары, стоимость поставки которых превышала 400 гривен. Условие: выведенная информация касается только трёх определённых поставщиков
+
+
+SELECT p.category, COUNT(*) as product_count
+FROM Products p
+JOIN producer s ON p.producer = s.producer_name
+WHERE s.producer_id IN (1, 2, 3) AND (p.quantity * s.delivery_price) > 400
+GROUP BY p.category;
+
+
+
