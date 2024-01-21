@@ -1,0 +1,42 @@
+-- Это у нас выручка за булочку с хлебом и молочко
+
+SELECT SUM((price - discount) * quantity) AS total_revenue
+FROM Products
+WHERE name IN ('Хлеб', 'Молоко');
+
+-- товары которых было доставлено более 10 штук вчера и сёдня
+SELECT *
+FROM Products
+WHERE quantity > 10 AND date_of_delivery IN (CAST(GETDATE() AS DATE), CAST(DATEADD(DAY, -1, GETDATE()) AS DATE));
+
+--  на 5% больше стоит всё крч
+UPDATE Products
+SET price = price * 0.95;
+
+--- Ставит дату на сегодня там где нет данных доставки
+
+UPDATE Products
+SET date_of_delivery = GETDATE()
+WHERE date_of_delivery IS NULL;
+
+--удаляем продукты кол-во которых меньше 100, а цена более 70 гривен
+DELETE FROM Products
+WHERE quantity < 100 AND price > 70;
+
+--Алкоголь фу, сладкое фу
+DELETE FROM Products
+WHERE category IN ('Алкогольные напитки', 'Кондитерские изделия');
+
+--Всё что доставили 3 меясца назад, в мусорку
+DELETE FROM Products
+WHERE date_of_delivery < DATEADD(MONTH, -3, GETDATE());
+
+--Если не знаем производителя или скидка больше 10% то в мусорку
+DELETE FROM Products
+WHERE producer IS NULL OR (discount / price) > 0.1;
+--У меня скидка в гривнах, поэтому делим скидончик на цену, и если оно составит десятую часть от числа или больше то по идее это будет 10% и больше
+
+
+
+
+
