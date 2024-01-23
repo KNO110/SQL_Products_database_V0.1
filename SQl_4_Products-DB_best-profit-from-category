@@ -1,0 +1,18 @@
+WITH Best_profit AS (
+    SELECT 
+        category,
+        SUM((price - discount) * quantity) AS total_profit,
+        ROW_NUMBER() OVER (ORDER BY SUM((price - discount) * quantity) DESC) AS tier_list
+		--тир лист даст нам поделённый список категорий, а благодаря desc, по убиыванию, получается номер 1 это самая крутая штука
+    FROM 
+        Products
+    GROUP BY 
+        category
+)
+SELECT 
+    category,
+    total_profit
+FROM 
+    Best_profit
+WHERE 
+    tier_list = 1;
