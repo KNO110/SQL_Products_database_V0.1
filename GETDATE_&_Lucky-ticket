@@ -1,0 +1,52 @@
+--1. показать среднее арифметическое трёх вещественных чисел, записанных в переменные.
+
+DECLARE 
+@n1 FLOAT = 0.32, 
+@n2 FLOAT = -73.45,
+@n3 FLOAT = 123.123;
+
+SELECT AVG(value) as avg_answer
+
+FROM (values (@n1), (@n2), (@n3)) as num(value);
+
+-----------------------------
+
+--2. скрипт проверяет, какое сейчас время суток на сервере, и выдаёт приветствие "добрый вечер!" или "добрый день!" (проверки ифами-элс ифами-элсом).
+
+DECLARE @current_time TIME = GETDATE();
+
+IF @current_time >= '06:00:00' AND @current_time < '12:00:00'
+    SELECT 'Утречка!' as privetstvie;
+
+ELSE IF @current_time >= '12:00:00' AND @current_time < '18:00:00'
+    SELECT 'Добрый день!' as privetstvie;
+
+ELSE IF @current_time >= '18:00:00' AND @current_time < '22:00:00'
+    SELECT 'Добрый вечер!' as privetstvie;
+
+ELSE
+    SELECT 'Доброй ночи!' as privetstvie;
+
+----------------------------------------
+
+--3. проверить, является ли шестизначное число номером счастливого трамвайного билета (сумма первых трёх цифр совпадает с суммой последних трёх цифр). например, число 123006 счастливое, 234567 нет.
+
+DECLARE @ticket_num int = 112004;
+
+IF LEN(CONVERT(nvarchar, @ticket_num)) = 6
+    AND ((@ticket_num / 100000) % 10 
+	+ 
+	(@ticket_num / 10000) % 10 
+	+ 
+	(@ticket_num / 1000) % 10)
+    = 
+	((@ticket_num / 100) % 10 
+	+ 
+	(@ticket_num / 10) % 10 
+	+ 
+	(@ticket_num % 10))
+
+    SELECT 'Повезло! Это счастливый билет!';
+	--Ну, можно через принт но тогда будет ответ не в result а в messages, не красиво(
+ELSE
+    SELECT 'Unluck, повезёт в следующий раз(';
