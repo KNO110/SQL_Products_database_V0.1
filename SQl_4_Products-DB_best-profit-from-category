@@ -1,3 +1,5 @@
+--Версия с WITH
+
 WITH Best_profit AS (
     SELECT 
         category,
@@ -16,3 +18,25 @@ FROM
     Best_profit
 WHERE 
     tier_list = 1;
+
+
+
+-- Версия без WITH
+
+SELECT 
+    category,
+    total_profit
+FROM 
+    (
+        SELECT 
+            category,
+            SUM((price - discount) * quantity) AS total_profit,
+            ROW_NUMBER() OVER (ORDER BY SUM((price - discount) * quantity) DESC) AS tier_list
+        FROM 
+            Products
+        GROUP BY 
+            category
+    ) AS Best_profit
+WHERE 
+    tier_list = 1;
+
